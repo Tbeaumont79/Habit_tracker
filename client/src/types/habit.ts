@@ -24,3 +24,12 @@ export interface CreateHabitData {
 }
 
 export type UpdateHabitData = Partial<CreateHabitData & { isArchived: boolean; position: number }>
+
+export interface HabitLog {
+  id: string
+  habitId: string
+  date: string
+  completed: boolean
+  note: string | null
+  createdAt: string
+}
