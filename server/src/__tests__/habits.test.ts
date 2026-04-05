@@ -132,7 +132,7 @@ describe('PUT /api/habits/:id', () => {
 })
 
 describe('PATCH /api/habits/:id/archive', () => {
-  it('toggles isArchived status for owned habit', async () => {
+  it('toggles isArchived status for owned habit (false → true)', async () => {
     const { token, userId } = await createTestUser()
     const habit = await testPrisma.habit.create({
       data: { userId, name: 'Habit', isArchived: false },
@@ -144,6 +144,20 @@ describe('PATCH /api/habits/:id/archive', () => {
 
     expect(res.status).toBe(200)
     expect(res.body.data.isArchived).toBe(true)
+  })
+
+  it('toggles isArchived status for owned habit (true → false)', async () => {
+    const { token, userId } = await createTestUser()
+    const habit = await testPrisma.habit.create({
+      data: { userId, name: 'Habit', isArchived: true },
+    })
+
+    const res = await request(app)
+      .patch(`/api/habits/${habit.id}/archive`)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.status).toBe(200)
+    expect(res.body.data.isArchived).toBe(false)
   })
 
   it('returns 403 when archiving another users habit', async () => {
@@ -181,6 +195,21 @@ describe('PATCH /api/habits/reorder', () => {
     const updated2 = await testPrisma.habit.findUnique({ where: { id: h2.id } })
     expect(updated1?.position).toBe(1)
     expect(updated2?.position).toBe(0)
+  })
+
+  it('returns 403 when reordering with another users habit IDs', async () => {
+    const { token } = await createTestUser('user1@test.com')
+    const { userId: otherId } = await createTestUser('user2@test.com')
+    const otherHabit = await testPrisma.habit.create({
+      data: { userId: otherId, name: 'Other Habit', position: 0 },
+    })
+
+    const res = await request(app)
+      .patch('/api/habits/reorder')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ habits: [{ id: otherHabit.id, position: 0 }] })
+
+    expect(res.status).toBe(403)
   })
 
   it('returns 401 without auth token', async () => {
