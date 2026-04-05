@@ -1,0 +1,121 @@
+/* =========================================
+   Responsive Utilities — HabitTracker v2
+   ========================================= */
+
+/* ------------------------------------------
+   Touch targets: minimum 44x44px on mobile
+   ------------------------------------------ */
+@media (max-width: 767px) {
+  button,
+  a,
+  [role='button'],
+  input[type='checkbox'],
+  input[type='radio'],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Inline links don't need forced min-width */
+  p a,
+  li a {
+    min-width: unset;
+    min-height: unset;
+    display: inline;
+  }
+}
+
+/* ------------------------------------------
+   Prevent text overflow on small screens
+   ------------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+p, li, td, th {
+  overflow-wrap: break-word;
+}
+
+/* ------------------------------------------
+   Max-width content constraint (wide screens)
+   ------------------------------------------ */
+.content-container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+@media (min-width: 768px) {
+  .content-container {
+    padding-inline: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-container {
+    padding-inline: 32px;
+  }
+}
+
+/* ------------------------------------------
+   Card stacking on mobile
+   ------------------------------------------ */
+@media (max-width: 767px) {
+  .card-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ------------------------------------------
+   Forms: full-width on mobile
+   ------------------------------------------ */
+@media (max-width: 767px) {
+  .form-field,
+  .form-group {
+    width: 100%;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='search'],
+  input[type='tel'],
+  input[type='url'],
+  select,
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ------------------------------------------
+   Modals: full-screen on mobile (< 480px)
+   ------------------------------------------ */
+@media (max-width: 479px) {
+  .modal,
+  [role='dialog'] {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    overflow-y: auto;
+  }
+}
+
+/* ------------------------------------------
+   Mobile body padding for bottom nav
+   ------------------------------------------ */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 64px;
+  }
+}
