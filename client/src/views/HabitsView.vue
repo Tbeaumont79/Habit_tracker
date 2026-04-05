@@ -4,6 +4,7 @@ import { useHabitsStore } from '@/stores/habits'
 import HabitCard from '@/components/habits/HabitCard.vue'
 import HabitForm from '@/components/habits/HabitForm.vue'
 import HabitDeleteConfirm from '@/components/habits/HabitDeleteConfirm.vue'
+import AppShell from '@/components/layout/AppShell.vue'
 import type { Habit, CreateHabitData } from '@/types/habit'
 
 const store = useHabitsStore()
@@ -107,6 +108,7 @@ async function handleArchive(habit: Habit) {
 </script>
 
 <template>
+  <AppShell>
   <div class="habits-page">
     <!-- Header -->
     <div class="page-header">
@@ -187,6 +189,7 @@ async function handleArchive(habit: Habit) {
       @cancel="cancelDelete"
     />
   </div>
+  </AppShell>
 </template>
 
 <style scoped>
