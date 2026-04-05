@@ -21,6 +21,7 @@ withDefaults(
 
 defineEmits<{
   'update:modelValue': [value: string]
+  blur: [event: FocusEvent]
 }>()
 </script>
 
@@ -35,6 +36,7 @@ defineEmits<{
       :disabled="disabled"
       :class="['base-input', { 'base-input--error': error }]"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @blur="$emit('blur', $event)"
     />
     <span v-if="error" class="input-error" role="alert">{{ error }}</span>
   </div>
