@@ -2,6 +2,7 @@
 
 @import "tailwindcss";
 @import "./responsive.css";
+@import "./animations.css";
 
 :root {
   --bg: #FFF8F0;
