@@ -54,18 +54,46 @@ export const useTrackingStore = defineStore('tracking', () => {
   }
 
   async function toggleHabit(habitId: string): Promise<void> {
-    const url = `${API_BASE}/tracking/${habitId}/toggle`
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: authHeaders(),
-    })
-    const log = await parseResponse<HabitLog>(res)
-    if (log.completed) {
-      todayLogs.value = new Map(todayLogs.value).set(log.habitId, log)
+    const wasCompleted = todayLogs.value.has(habitId)
+    const previousLog = todayLogs.value.get(habitId)
+
+    // Optimistic update — reflect change immediately before server responds
+    if (wasCompleted) {
+      todayLogs.value.delete(habitId)
     } else {
-      const updated = new Map(todayLogs.value)
-      updated.delete(log.habitId)
-      todayLogs.value = updated
+      todayLogs.value.set(habitId, {
+        id: 'temp',
+        habitId,
+        date: new Date().toISOString(),
+        completed: true,
+        note: null,
+        createdAt: new Date().toISOString(),
+      })
+    }
+
+    try {
+      const url = `${API_BASE}/tracking/${habitId}/toggle`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: authHeaders(),
+      })
+      if (!res.ok) throw new Error('Toggle failed')
+      const json = (await res.json()) as { data: { completed: boolean; log: HabitLog | null } }
+      const { completed, log } = json.data
+
+      // Replace optimistic value with real server data
+      if (completed && log) {
+        todayLogs.value.set(habitId, log)
+      } else {
+        todayLogs.value.delete(habitId)
+      }
+    } catch {
+      // Rollback optimistic update on error
+      if (wasCompleted && previousLog) {
+        todayLogs.value.set(habitId, previousLog)
+      } else {
+        todayLogs.value.delete(habitId)
+      }
     }
   }
 

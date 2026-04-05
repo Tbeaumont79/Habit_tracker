@@ -106,7 +106,7 @@ describe('useTrackingStore', () => {
 
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: newLog }),
+      json: async () => ({ data: { completed: true, log: newLog } }),
     } as Response)
 
     const store = useTrackingStore()
@@ -123,14 +123,9 @@ describe('useTrackingStore', () => {
     // Pre-populate with a log
     store.todayLogs.set('habit-1', mockLogs[0])
 
-    const untoggledLog: HabitLog = {
-      ...mockLogs[0],
-      completed: false,
-    }
-
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: untoggledLog }),
+      json: async () => ({ data: { completed: false, log: null } }),
     } as Response)
 
     expect(store.isCompleted('habit-1')).toBe(true)
@@ -152,7 +147,7 @@ describe('useTrackingStore', () => {
 
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: newLog }),
+      json: async () => ({ data: { completed: true, log: newLog } }),
     } as Response)
 
     const store = useTrackingStore()
@@ -165,5 +160,70 @@ describe('useTrackingStore', () => {
     expect((calledOptions.headers as Record<string, string>)['Authorization']).toBe(
       'Bearer test-token',
     )
+  })
+
+  it('toggleHabit applies optimistic update immediately before fetch resolves', async () => {
+    let resolveFetch!: (value: unknown) => void
+    const fetchPromise = new Promise((resolve) => { resolveFetch = resolve })
+
+    global.fetch = vi.fn().mockReturnValueOnce(fetchPromise)
+
+    const store = useTrackingStore()
+    expect(store.isCompleted('habit-5')).toBe(false)
+
+    const togglePromise = store.toggleHabit('habit-5')
+
+    // Before fetch resolves, the optimistic update should already be applied
+    expect(store.isCompleted('habit-5')).toBe(true)
+    expect(store.todayLogs.get('habit-5')).toMatchObject({ id: 'temp', habitId: 'habit-5' })
+
+    // Now resolve the fetch with real server data
+    const realLog: HabitLog = {
+      id: 'log-5',
+      habitId: 'habit-5',
+      date: '2024-01-15',
+      completed: true,
+      note: null,
+      createdAt: '2024-01-15T12:00:00.000Z',
+    }
+    resolveFetch({ ok: true, json: async () => ({ data: { completed: true, log: realLog } }) })
+    await togglePromise
+
+    // After fetch, the real log replaces the optimistic one
+    expect(store.isCompleted('habit-5')).toBe(true)
+    expect(store.todayLogs.get('habit-5')).toMatchObject({ id: 'log-5' })
+  })
+
+  it('toggleHabit rolls back optimistic update on fetch error', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Server error' }),
+    } as Response)
+
+    const store = useTrackingStore()
+    expect(store.isCompleted('habit-6')).toBe(false)
+
+    await store.toggleHabit('habit-6')
+
+    // Should be rolled back to the original state (not completed)
+    expect(store.isCompleted('habit-6')).toBe(false)
+  })
+
+  it('toggleHabit rolls back to previous log on error when habit was already completed', async () => {
+    const store = useTrackingStore()
+    store.todayLogs.set('habit-1', mockLogs[0])
+
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Server error' }),
+    } as Response)
+
+    expect(store.isCompleted('habit-1')).toBe(true)
+
+    await store.toggleHabit('habit-1')
+
+    // Should be rolled back to completed (the previous state)
+    expect(store.isCompleted('habit-1')).toBe(true)
+    expect(store.todayLogs.get('habit-1')).toMatchObject({ id: 'log-1' })
   })
 })
