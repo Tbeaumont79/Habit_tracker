@@ -5,6 +5,7 @@ import { authRoutes } from './routes/auth.js'
 import { authMiddleware } from './middleware/auth.js'
 import habitsRouter from './routes/habits.js'
 import trackingRouter from './routes/tracking.js'
+import statsRouter from './routes/stats.js'
 
 export function createApp() {
   const app = express()
@@ -21,6 +22,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes)
   app.use('/api/habits', authMiddleware, habitsRouter)
   app.use('/api/tracking', authMiddleware, trackingRouter)
+  app.use('/api/stats', authMiddleware, statsRouter)
 
   // Global error handler
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
