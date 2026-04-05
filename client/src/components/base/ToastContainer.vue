@@ -48,38 +48,38 @@ const { toasts, remove } = useToast()
 }
 
 /* Enter: slide in from top */
-.toast-enter-active {
+:global(.toast-enter-active) {
   transition:
     opacity 300ms ease-out,
     transform 300ms ease-out;
 }
 
 /* Exit: fade out */
-.toast-leave-active {
+:global(.toast-leave-active) {
   transition: opacity 200ms ease-in;
   position: absolute;
 }
 
-.toast-enter-from {
+:global(.toast-enter-from) {
   opacity: 0;
   transform: translateY(-12px);
 }
 
-.toast-enter-to {
+:global(.toast-enter-to) {
   opacity: 1;
   transform: translateY(0);
 }
 
-.toast-leave-from {
+:global(.toast-leave-from) {
   opacity: 1;
 }
 
-.toast-leave-to {
+:global(.toast-leave-to) {
   opacity: 0;
 }
 
 /* Smooth re-stack when an item is removed */
-.toast-move {
+:global(.toast-move) {
   transition: transform 200ms ease;
 }
 </style>
