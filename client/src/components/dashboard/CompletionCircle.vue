@@ -12,6 +12,8 @@ const STROKE_WIDTH = 8
 const RADIUS = (SIZE - STROKE_WIDTH) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
+const gradientId = `completion-gradient-${Math.random().toString(36).slice(2, 8)}`
+
 const animatedPercentage = ref(0)
 
 const dashoffset = computed(() => {
@@ -46,7 +48,7 @@ onMounted(() => {
   <div class="completion-circle">
     <svg :width="SIZE" :height="SIZE" :viewBox="`0 0 ${SIZE} ${SIZE}`">
       <defs>
-        <linearGradient id="completion-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient :id="gradientId" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="var(--primary)" />
           <stop offset="100%" stop-color="var(--secondary)" />
         </linearGradient>
@@ -68,7 +70,7 @@ onMounted(() => {
         :cy="SIZE / 2"
         :r="RADIUS"
         fill="none"
-        stroke="url(#completion-gradient)"
+        :stroke="`url(#${gradientId})`"
         :stroke-width="STROKE_WIDTH"
         stroke-linecap="round"
         :stroke-dasharray="CIRCUMFERENCE"

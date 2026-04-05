@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { HeatmapData } from '@/types/stats'
 
 interface Props {
@@ -7,7 +8,17 @@ interface Props {
 
 defineProps<Props>()
 
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const dayLabels = computed(() => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const today = new Date()
+  const labels: string[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    labels.push(days[d.getDay()])
+  }
+  return labels
+})
 
 function cellClass(completed: boolean): string {
   return completed ? 'heatmap__cell heatmap__cell--done' : 'heatmap__cell heatmap__cell--empty'
@@ -20,7 +31,7 @@ function cellClass(completed: boolean): string {
     <div class="heatmap__row heatmap__row--header">
       <div class="heatmap__habit-label" />
       <div
-        v-for="day in DAY_LABELS"
+        v-for="day in dayLabels"
         :key="day"
         class="heatmap__day-label"
       >

@@ -52,6 +52,9 @@ router.get(
     // --- This month vs previous month ---
     const now = new Date()
     const thisMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+    const thisMonthEnd = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999)
+    )
     const prevMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1))
     const prevMonthEnd = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0, 23, 59, 59, 999)
@@ -60,7 +63,7 @@ router.get(
     const thisMonthLogs = await prisma.habitLog.count({
       where: {
         habitId: { in: habits.map((h) => h.id) },
-        date: { gte: thisMonthStart },
+        date: { gte: thisMonthStart, lte: thisMonthEnd },
         completed: true,
       },
     })
