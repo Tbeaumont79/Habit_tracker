@@ -179,9 +179,9 @@ const frequencyLabel: Record<Habit['frequency'], string> = {
 }
 
 .icon-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   display: flex;

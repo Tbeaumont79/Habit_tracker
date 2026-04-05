@@ -16,6 +16,17 @@ const deletingHabit = ref<Habit | undefined>(undefined)
 // Category filter
 const activeCategory = ref<string>('')
 
+// Error state
+const errorMessage = ref<string>('')
+
+function clearError() {
+  errorMessage.value = ''
+}
+
+function handleError(err: unknown) {
+  errorMessage.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
+}
+
 const categories = computed<string[]>(() => {
   const cats = store.habits
     .map((h) => h.category)
@@ -28,8 +39,12 @@ const filteredHabits = computed<Habit[]>(() => {
   return store.habits.filter((h) => h.category === activeCategory.value)
 })
 
-onMounted(() => {
-  void store.fetchHabits()
+onMounted(async () => {
+  try {
+    await store.fetchHabits()
+  } catch (err) {
+    handleError(err)
+  }
 })
 
 function openCreate() {
@@ -48,12 +63,17 @@ function closeForm() {
 }
 
 async function handleFormSubmit(data: CreateHabitData) {
-  if (editingHabit.value) {
-    await store.updateHabit(editingHabit.value.id, data)
-  } else {
-    await store.createHabit(data)
+  clearError()
+  try {
+    if (editingHabit.value) {
+      await store.updateHabit(editingHabit.value.id, data)
+    } else {
+      await store.createHabit(data)
+    }
+    closeForm()
+  } catch (err) {
+    handleError(err)
   }
-  closeForm()
 }
 
 function requestDelete(habit: Habit) {
@@ -62,8 +82,14 @@ function requestDelete(habit: Habit) {
 
 async function confirmDelete() {
   if (!deletingHabit.value) return
-  await store.deleteHabit(deletingHabit.value.id)
-  deletingHabit.value = undefined
+  clearError()
+  try {
+    await store.deleteHabit(deletingHabit.value.id)
+    deletingHabit.value = undefined
+  } catch (err) {
+    handleError(err)
+    deletingHabit.value = undefined
+  }
 }
 
 function cancelDelete() {
@@ -71,7 +97,12 @@ function cancelDelete() {
 }
 
 async function handleArchive(habit: Habit) {
-  await store.archiveHabit(habit.id)
+  clearError()
+  try {
+    await store.archiveHabit(habit.id)
+  } catch (err) {
+    handleError(err)
+  }
 }
 </script>
 
@@ -86,6 +117,12 @@ async function handleArchive(habit: Habit) {
       <button class="btn btn-primary add-btn" @click="openCreate">
         <span class="add-icon">+</span> Add Habit
       </button>
+    </div>
+
+    <!-- Error banner -->
+    <div v-if="errorMessage" class="error-banner" role="alert">
+      <span>{{ errorMessage }}</span>
+      <button class="error-dismiss" aria-label="Dismiss error" @click="clearError">✕</button>
     </div>
 
     <!-- Category filter -->
@@ -303,5 +340,31 @@ async function handleArchive(habit: Habit) {
 
 .btn-primary:hover {
   background: var(--primary-dark);
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--error-light, #fef2f2);
+  color: var(--error, #dc2626);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  border: 1px solid var(--error, #dc2626);
+}
+
+.error-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 </style>

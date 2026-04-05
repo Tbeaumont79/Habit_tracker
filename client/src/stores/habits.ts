@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Habit, CreateHabitData, UpdateHabitData } from '@/types/habit'
 
-const API_BASE = 'http://localhost:3001/api/habits'
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/habits`
 
 function getToken(): string {
   return localStorage.getItem('token') ?? ''
