@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --surface-alt: #FFF0F5;
+  --primary: #FF6B9D;
+  --primary-light: #FFB3D0;
+  --primary-dark: #E5456E;
+  --secondary: #B8A9E8;
+  --secondary-light: #DDD4F4;
+  --accent: #7DD3B4;
+  --accent-light: #C5EDE0;
+  --warning: #FFB07A;
+  --warning-light: #FFD4B5;
+  --error: #E83C3C;
+  --error-light: #FFB5B5;
+  --text: #2D2B3D;
+  --text-secondary: #564A65;
+  --text-muted: #7B7192;
+  --border: #F0E4E8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  font-family:
+    'Plus Jakarta Sans',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+}

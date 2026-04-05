@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.db
+*.db-journal
+prisma/*.db-journal
+prisma/*.db
+
+# Editor
+.DS_Store
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Build outputs
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
