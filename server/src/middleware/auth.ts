@@ -8,6 +8,9 @@ export interface AuthenticatedRequest extends Request {
 const JWT_SECRET =
   process.env.JWT_SECRET || 'dev-secret-change-in-production'
 
+// Alias for route-level usage
+export const authMiddleware = requireAuth
+
 export function requireAuth(
   req: AuthenticatedRequest,
   res: Response,

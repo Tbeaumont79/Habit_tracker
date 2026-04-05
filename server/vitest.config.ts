@@ -8,5 +8,11 @@ export default defineConfig({
       DATABASE_URL: 'file:./test.db',
       JWT_SECRET: 'test-secret-for-vitest',
     },
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 })
